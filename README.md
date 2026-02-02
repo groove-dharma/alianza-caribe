@@ -109,8 +109,6 @@ Usa **[hash-file.online](https://hash-file.online/)** para verificar el hash sin
 4. Haz clic en **🔐 [CALCULATE HASH]**.
 5. Compara el hash que salga con el de la tabla de este README.
 
-*Nota:* Los cálculos se hacen en tu navegador; el archivo no se sube a ningún servidor. Para documentos muy sensibles puedes seguir usando la verificación local (Opción 1).
-
 ---
 
 *Este repositorio es la versión pública y auditable del marco constitucional y legal de Alianza Caribe. Las actualizaciones de créditos, firmas y listado de leyes se irán incorporando según se indique.*
