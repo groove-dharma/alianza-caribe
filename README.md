@@ -75,7 +75,7 @@ Cada documento tiene un **hash SHA-256** que permite comprobar que el archivo no
 | LOCAr-01 | `leyes orgánicas/Cuerpo de Árbitros/LOCAr-01.MD` | `5BF59ED83AD42B2D05D69394218785672950AD16D5B4A01778771F4C38461EB7` |
 | PAAH-01 | `leyes orgánicas/Cuerpo de Árbitros/PAAH-01.MD` | `B530574C6584364776002D87DFF3D8A8A929E509F08A1A2B40AB90A8D01A232A` |
 
-*Al modificar cualquier documento oficial, los hashes deben actualizarse en este README.*
+*Al modificar o añadir cualquier documento oficial, los hashes deben actualizarse en este README.*
 
 ---
 
@@ -99,14 +99,17 @@ sha256sum ruta/al/archivo.MD
 
 Compara la cadena hexadecimal que devuelve el comando con la de la tabla.
 
-### Opción 2: Herramientas en línea
+### Opción 2: Herramienta en línea
 
-Puedes subir el archivo a un verificador de hash gratuito y comparar el SHA-256:
+Usa **[hash-file.online](https://hash-file.online/)** para verificar el hash sin instalar nada:
 
-- **[defuse.ca/file-verification.htm](https://defuse.ca/file-verification.htm)** — Calcula SHA-256 del archivo que subas; solo tienes que pegar el hash esperado y comprobar si coinciden.
-- **[onlinemd5.com](https://www.onlinemd5.com/)** — Permite elegir SHA-256, subir el archivo y comparar con el hash publicado.
+1. Entra en [https://hash-file.online/](https://hash-file.online/).
+2. Sube el archivo (arrástralo o haz clic en "Elegir archivos").
+3. Marca la casilla **SHA-256 | 256-bit**.
+4. Haz clic en **🔐 [CALCULATE HASH]**.
+5. Compara el hash que salga con el de la tabla de este README.
 
-*Recomendación:* Para documentos sensibles, preferir la verificación local (Opción 1) si no quieres subir el archivo a un servidor externo.
+*Nota:* Los cálculos se hacen en tu navegador; el archivo no se sube a ningún servidor. Para documentos muy sensibles puedes seguir usando la verificación local (Opción 1).
 
 ---
 
