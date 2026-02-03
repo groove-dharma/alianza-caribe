@@ -2,9 +2,17 @@
 
 ## ¿Qué es Alianza Caribe?
 
-**Alianza Caribe** es un proyecto de Estado digital soberano, fundado sobre principios constitucionales claros y un sistema de gobierno deliberativo. Nace como una alternativa de orden, transparencia y participación para ciudadanos que buscan un marco donde la ley sea soberana, los poderes estén separados y la ciudadanía se ejerza como acto consciente, no como estado pasivo.
+**Alianza Caribe** es un proyecto de Estado para una transición tecnocrática en un país devastado por décadas de autoritarismo, economía de rapiña y simulacros de democracia. Nace en el marco de la ruptura del viejo paradigma electoral venezolano posterior a enero de 2026, cuando quedó en evidencia que ni el régimen ni su oposición ritualizada podían ofrecer un marco de soberanía real, estabilidad jurídica ni protección efectiva de la vida cotidiana.
 
-El sistema se rige por **Los Diez Mandamientos Fundacionales**, que establecen la estructura de poderes (Legislativo, Arbitral, Concejo Ejecutivo y Judicial), la transparencia radical, la ciudadanía activa por mérito y el imperio de la ley. Toda la normativa —Constitución y leyes orgánicas— está publicada en este repositorio en formato Markdown para lectura, referencia y auditoría pública.
+Más que un partido o una plataforma de liderazgo personal, Alianza Caribe es una **arquitectura constitucional y de procesos**: un sistema operativo de gobierno diseñado para que la Ley sea soberana sobre la opinión, el procedimiento pese más que el carisma y la transparencia derrote la opacidad como tecnología de poder. Sus Diez Mandamientos Fundacionales y sus leyes orgánicas definen con precisión qué hace cada poder, cómo se nombra a sus operadores y bajo qué condiciones pueden y deben ser destituidos.
+
+Su misión central es **combatir el caos**. El caos venezolano no es solo económico o institucional, sino también cognitivo: un “reunionismo” infinito donde todo se discute y nada se decide. Alianza Caribe existe para **convertir el disenso caótico en consenso estructurado**, sin anular el desacuerdo. Lo hace canalizando cada conflicto hacia procedimientos formales: ciudadanía como acto verificable, deliberación legislativa falsable, arbitraje técnico de la forma y un Poder Judicial que protege derechos negativos inalienables.
+
+En el plano doctrinal, Alianza Caribe se alinea con la idea de un **Patriotismo Concreto**: no se organiza alrededor de símbolos vacíos ni de una patria abstracta, sino de la defensa de un ecosistema donde la vida, la libertad y la propiedad puedan florecer. El Estado no es un ídolo al que se sacrifican individuos, sino una máquina de servicio limitada, cuya única legitimidad proviene de su capacidad para proteger derechos, garantizar contratos y mantener un entorno de máxima predictibilidad.
+
+Frente a arquitecturas totalitarias que buscan anular al individuo soberano, Alianza Caribe asume una posición clara: ciertas formas de poder que han demostrado ser letales para la Patria Concreta deben quedar permanentemente fuera de los instrumentos del Estado, sin necesidad de prohibir su estudio ni su crítica. La defensa de la soberanía cognitiva —el derecho de cada ciudadano a comprender, refutar y superar esas doctrinas— es parte esencial del diseño.
+
+Este repositorio recoge la primera versión pública de ese marco: la Constitución (Los Diez Mandamientos Fundacionales), las leyes orgánicas de cada poder y los protocolos técnicos que describen cómo se transforman las ideas en leyes, las leyes en decisiones y las decisiones en trazas auditables. Alianza Caribe es, en su núcleo, una invitación a someter este sistema a la misma prueba que exige de sus ciudadanos: falsación rigurosa, crítica implacable y mejora continua.
 
 ---
 
@@ -19,25 +27,64 @@ El sistema se rige por **Los Diez Mandamientos Fundacionales**, que establecen l
 
 ## Créditos y constituyentes
 
-*(Se irá completando con los nombres completos, firmas y créditos de cada ley según se indique.)*
+Esta sección documenta la autoría intelectual del sistema, las leyes y los protocolos, así como los constituyentes que han participado en su robustecimiento.
+
+### Núcleo conceptual
+
+- **Idea fundacional del Estado y del proyecto Alianza Caribe:** David A. Molina.  
+- **Diseño del sistema y arquitectura institucional:** Angel D. Ruiz B., David A. Molina  
+- **Metodología de trabajo con IA utilizada en las redacciones (Protocolo Kairós v2.7 y v2.8):** Angel D. Ruiz B. (metodología propia, repositorio en GitHub: [groove-dharma/kairos](https://github.com/groove-dharma/kairos)).
 
 ### Constituyentes fundadores
 
-| Nombre completo | Rol / Crédito | Firma |
-|-----------------|---------------|-------|
-| *[Por definir]* | *[Por definir]* | *[Por definir]* |
+| Nombre completo              | Rol / Crédito                                                                                             | Firma |
+|-----------------------------|-----------------------------------------------------------------------------------------------------------|-------|
+| David A. Molina             | Idea fundacional de Alianza Caribe; coautor de la Constitución y de todas las leyes orgánicas.          | *[Por definir]* |
+| Angel D. Ruiz B.            | Diseño del sistema; coautor de la Constitución y de todas las leyes orgánicas; autor de todos los protocolos; creador del Protocolo Kairós. | *[Por definir]* |
+| Silvio A. Parolín H.        | Coautor en la definición de las fórmulas de número de árbitros y jueces; auditor y deliberador en todas las leyes. | *[Por definir]* |
+| Fernando Spinelli           | Coautor de la LOAC-01 en la fase de credencialización basada en blockchain; auditor y deliberador en todas las leyes. | *[Por definir]* |
+| Protocolo Kairós (v2.7–2.8) | Metodología de trabajo con IA empleada en la redacción y estructuración de los textos normativos; coautoría principal en todos los textos junto a los autores humanos. | —     |
 
 ### Créditos por documento
 
-- **Constitución — Los Diez Mandamientos Fundacionales:** *[Créditos y firmas por definir].*
-- **LOAC-01 — Ley Orgánica del Acto Ciudadano:** *[Créditos por definir].*
-- **LODE-01 — Ley Orgánica de Decisión Ejecutiva:** *[Créditos por definir].*
-- **LODL-01 — Ley Orgánica de Deliberación Legislativa:** *[Créditos por definir].*
-- **LOPJ-01 — Ley Orgánica del Poder Judicial:** *[Créditos por definir].*
-- **LOCAr-01 — Ley Orgánica del Cuerpo de Árbitros:** *[Créditos por definir].*
-- **PAJ-01 — Protocolo de Acceso a la Justicia:** *[Créditos por definir].*
-- **PPJ-01 — Protocolo de Proceso Judicial:** *[Créditos por definir].*
-- **PAAH-01 — Protocolo de Asignación Arbitral Híbrida:** *[Créditos por definir].*
+- **Constitución — Los Diez Mandamientos Fundacionales de Alianza Caribe**  
+  - **Redacción original:** David A. Molina, Angel D. Ruiz B., Protocolo Kairós (v2.7–2.8).  
+  - **Deliberación y auditoría:** Silvio A. Parolín H., Fernando Spinelli, Angel D. Ruiz B., David A. Molina y otros constituyentes.
+
+- **LOAC-01 — Ley Orgánica del Acto Ciudadano**  
+  - **Redacción original:** David A. Molina, Angel D. Ruiz B., Protocolo Kairós (v2.7–2.8).  
+  - **Coautoría (Fase de Credencialización Soberana basada en blockchain):** Fernando Spinelli.  
+  - **Deliberación y auditoría:** Silvio A. Parolín H., Fernando Spinelli, Angel D. Ruiz B., David A. Molina y otros constituyentes.
+
+- **LODE-01 — Ley Orgánica de Decisión Ejecutiva**  
+  - **Redacción original:** David A. Molina, Angel D. Ruiz B., Protocolo Kairós (v2.7–2.8).  
+  - **Deliberación y auditoría:** Silvio A. Parolín H., Fernando Spinelli, Angel D. Ruiz B., David A. Molina y otros constituyentes.
+
+- **LODL-01 — Ley Orgánica de Deliberación Legislativa**  
+  - **Redacción original:** David A. Molina, Angel D. Ruiz B., Protocolo Kairós (v2.7–2.8).  
+  - **Deliberación y auditoría:** Silvio A. Parolín H., Fernando Spinelli, Angel D. Ruiz B., David A. Molina y otros constituyentes.
+
+- **LOPJ-01 — Ley Orgánica del Poder Judicial**  
+  - **Redacción original:** David A. Molina, Angel D. Ruiz B., Protocolo Kairós (v2.7–2.8).  
+  - **Coautoría (fórmula de escalabilidad del número de jueces):** Silvio A. Parolín H.  
+  - **Deliberación y auditoría:** Silvio A. Parolín H., Fernando Spinelli, Angel D. Ruiz B., David A. Molina y otros constituyentes.
+
+- **LOCAr-01 — Ley Orgánica del Cuerpo de Árbitros**  
+  - **Redacción original:** David A. Molina, Angel D. Ruiz B., Protocolo Kairós (v2.7–2.8).  
+  - **Coautoría (fórmula de escalabilidad del número de árbitros):** Silvio A. Parolín H.  
+  - **Deliberación y auditoría:** Silvio A. Parolín H., Fernando Spinelli, Angel D. Ruiz B., David A. Molina y otros constituyentes.
+
+- **PAJ-01 — Protocolo Técnico de Acceso a la Justicia**  
+  - **Autoría principal:** Angel D. Ruiz B., Protocolo Kairós (v2.7–2.8).  
+  - **Deliberación y auditoría:** Silvio A. Parolín H., Fernando Spinelli, Angel D. Ruiz B., David A. Molina y otros constituyentes.
+
+- **PPJ-01 — Protocolo de Proceso Judicial**  
+  - **Autoría principal:** Angel D. Ruiz B., Protocolo Kairós (v2.7–2.8).  
+  - **Deliberación y auditoría:** Silvio A. Parolín H., Fernando Spinelli, Angel D. Ruiz B., David A. Molina y otros constituyentes.
+
+- **PAAH-01 — Protocolo de Asignación Arbitral Híbrida**  
+  - **Autoría principal:** Angel D. Ruiz B., Protocolo Kairós (v2.7–2.8).  
+  - **Deliberación y auditoría:** Silvio A. Parolín H., Fernando Spinelli, Angel D. Ruiz B., David A. Molina y otros constituyentes.
 
 ---
 
