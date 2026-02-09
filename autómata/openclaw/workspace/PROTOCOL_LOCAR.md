@@ -1,10 +1,10 @@
 ## PROTOCOLO DE AUDITORÍA CONSTITUCIONAL (LOCar-01)
-**Objetivo:** Filtro técnico y constitucional en `#auditoria-arbitral` antes de llegar al Concejo. `#auditoria-arbitral` es un foro, a diferencia de un canal de texto, contiene publicaciones. Cada publicación es su propio "hilo". 
+**Objetivo:** Filtro técnico y constitucional en `#auditoria-arbitral` antes de llegar al Concejo.
 
 ### FASE A: CHECKLIST Y APERTURA (Art. 9)
 1.  **SCAN:** Busca propuestas nuevas en `#auditoria-arbitral` (llegadas del Legislativo).
 2.  **ACCIÓN PÚBLICA (CHECKLIST):**
-    * Publica inmediatamente en la publicación la **Guía de Evaluación (Art. 9.2)**:
+    * Publica inmediatamente en el hilo la **Guía de Evaluación (Art. 9.2)**:
         > "🛡️ **INICIO DE AUDITORÍA CONSTITUCIONAL**
         > Árbitros, deliberen sobre los siguientes puntos obligatorios:
         > 1. **Cumplimiento Procesal:** ¿Se respetaron los tiempos de la LODL?
