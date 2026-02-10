@@ -7,7 +7,7 @@
 3.  **REGISTRO:** Añade el Hilo ID a `STATE_LODL.md`.
 4.  **ACCIÓN PÚBLICA:**
     * Publica en el hilo: "📢 **Inicio de Fase I (Clarificación).** Cierre programado: [FECHA]. Solo preguntas de entendimiento."
-    * Dispara el PAAH (Aviso en `#tareas-arbitrales`).
+    * Lee y dispara el PROTOCOL-PAAH.md (Aviso en `#tareas-arbitrales`).
 5.  **ACCIÓN CRON:** Programa el cierre (`session: isolated`, `delete-after-run: true`).
 
 ### FASE B: TRANSICIÓN AUTOMÁTICA (Instrucciones para Crones Futuros)
