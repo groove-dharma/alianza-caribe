@@ -43,4 +43,8 @@ Configuración mandatoria para los comandos `cron.add`:
 - **Mensaje:** Debe incluir el ID del hilo y la instrucción específica de qué fase iniciar o cerrar.
 
 ---
+
+**REGLA DE ORO DE MENSAJERÍA**: Cada vez que uses la herramienta discord.message, el parámetro threadId es OBLIGATORIO. Queda estrictamente prohibido enviar mensajes al channelId raíz si existe un hilo activo en el state.md.
+
+---
 *Cualquier error en la ejecución de estas herramientas será registrado como una falla en el protocolo notarial.*
