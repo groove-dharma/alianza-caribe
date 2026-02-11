@@ -1,0 +1,137 @@
+/*Only for reference purposes, do not modify*/
+{
+  "meta": {
+    "lastTouchedVersion": "2026.2.3-1",
+    "lastTouchedAt": "2026-02-11T12:24:44.394Z"
+  },
+  "wizard": {
+    "lastRunAt": "2026-02-11T12:24:44.389Z",
+    "lastRunVersion": "2026.2.3-1",
+    "lastRunCommand": "configure",
+    "lastRunMode": "local"
+  },
+  "auth": {
+    "profiles": {
+      "google:default": {
+        "provider": "google",
+        "mode": "api_key"
+      },
+      "anthropic:default": {
+        "provider": "anthropic",
+        "mode": "api_key"
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "google/gemini-2.5-flash",
+        "fallbacks": [
+          "anthropic/claude-haiku-4-5"
+        ]
+      },
+      "models": {
+        "google/gemini-2.5-flash": {},
+        "anthropic/claude-haiku-4-5": {}
+      },
+      "workspace": "/home/ubuntu/.openclaw/workspace",
+      "contextPruning": {
+        "mode": "cache-ttl",
+        "ttl": "5m",
+        "keepLastAssistants": 3,
+        "softTrimRatio": 0.3,
+        "hardClearRatio": 0.5,
+        "minPrunableToolChars": 50000,
+        "hardClear": {
+          "enabled": true,
+          "placeholder": "[Old tool result content cleared to save memory]"
+        }
+      },
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    },
+    "list": [
+      {
+        "id": "main"
+      },
+      {
+        "id": "legislativo",
+        "name": "legislativo",
+        "workspace": "/home/ubuntu/.openclaw/workspace-legislativo",
+        "agentDir": "/home/ubuntu/.openclaw/agents/legislativo/agent",
+        "model": "google/gemini-flash-latest",
+        "heartbeat": {
+          "every": "30m",
+          "prompt": "Ejecuta el protocolo de HEARTBEAT.md centrándote ÚNICAMENTE en el canal ID: placeholder."
+        }
+      }
+    ]
+  },
+  "bindings": [
+    {
+      "agentId": "legislativo",
+      "match": {
+        "channel": "discord",
+        "peer": {
+          "kind": "channel",
+          "id": "placeholder" 
+        }
+      }
+    }
+  ],
+  "tools": {
+    "web": {
+      "search": {
+        "enabled": true,
+        "apiKey": "placeholder"
+      },
+      "fetch": {
+        "enabled": true
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "channels": {
+    "discord": {
+      "enabled": true,
+      "token": "placeholder",
+      "groupPolicy": "open"
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token",
+      "token": "placeholder"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    }
+  },
+  "skills": {
+    "install": {
+      "nodeManager": "npm"
+    }
+  },
+  "plugins": {
+    "entries": {
+      "discord": {
+        "enabled": true
+      }
+    }
+  }
+}
