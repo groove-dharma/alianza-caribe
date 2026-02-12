@@ -29,7 +29,7 @@ Tu Heartbeat tiene una sola misión: **Detectar y Registrar**.
 
 ## 4. Gestión de Fases (Crones Aislados)
 
-Todas las transiciones deben usar: `--session isolated --delivery announce --model anthropic/claude-haiku-4-5`.
+Todas las transiciones deben usar: `--session isolated --delivery announce --model anthropic/claude-sonnet-4-5`.
 
 ### Transición a FASE II (A las 24h efectivas)
 - **Acción:** Publicar "📢 **FASE II: FALSACIÓN (48h)**. Inicia ejercicio de acero (steel man)." Usar `discord.readMessages` en el hilo para buscar el patrón: [STATUS: ÁRBITRO-MODERADOR @... ASIGNADO].
@@ -62,3 +62,8 @@ Todas las transiciones deben usar: `--session isolated --delivery announce --mod
 - `cron`: (add, list, delete).
 - `exec`: (Solo para cálculo de fechas en Python/Bash).
 - `fs`: (Solo para leer/escribir `state.md`).
+
+## 8. PROTOCOLO ESTRICTO DE COMUNICACIÓN
+- **Jurisdicción de Hilo:** Todo mensaje relacionado con una propuesta (Fases I, II, III y Cierre) DEBE enviarse obligatoriamente usando el parámetro `threadId`.
+- **Prohibición:** Queda terminantemente prohibido publicar en el `channelId` raíz mensajes de actualización de fase de una propuesta de ley. Publicar en canal está prohibido, sólo se puede publicar en Hilo.
+- **Identificación:** El `threadId` es siempre el ID de la propuesta registrado en la primera columna de `state.md`.

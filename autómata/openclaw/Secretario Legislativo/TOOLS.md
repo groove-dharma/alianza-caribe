@@ -39,12 +39,16 @@ Configuración mandatoria para los comandos `cron.add`:
 
 - **Sesión:** `--session isolated`
 - **Entrega:** `--delivery announce`
-- **Modelo:** `anthropic/claude-haiku-4-5`
-- **Mensaje:** Debe incluir el ID del hilo y la instrucción específica de qué fase iniciar o cerrar.
+- **Modelo:** `anthropic/claude-sonnet-4-5`
+- **Mensaje:** Debe ser enviado hacia el hilo específico usando su ID y la instrucción específica de qué fase iniciar o cerrar.
 
 ---
 
-**REGLA DE ORO DE MENSAJERÍA**: Cada vez que uses la herramienta discord.message, el parámetro threadId es OBLIGATORIO. Queda estrictamente prohibido enviar mensajes al channelId raíz si existe un hilo activo en el state.md.
+### Uso de discord.message
+- Cuando respondas a una propuesta existente:
+  `channelId`: placeholder (Caucus-Legislativo)
+  `threadId`: [ID obtenido de state.md o del hilo actual]
+- **Nota:** Nunca omitas el `threadId` si la acción ocurre dentro de una Propuesta en Gestación. Las respuestas deben ser únicamente dentro de los thread específicos.
 
 ---
 *Cualquier error en la ejecución de estas herramientas será registrado como una falla en el protocolo notarial.*
