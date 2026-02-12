@@ -2,10 +2,10 @@
 {
   "meta": {
     "lastTouchedVersion": "2026.2.3-1",
-    "lastTouchedAt": "2026-02-11T12:24:44.394Z"
+    "lastTouchedAt": "2026-02-11T16:04:58.069Z"
   },
   "wizard": {
-    "lastRunAt": "2026-02-11T12:24:44.389Z",
+    "lastRunAt": "2026-02-11T16:04:58.064Z",
     "lastRunVersion": "2026.2.3-1",
     "lastRunCommand": "configure",
     "lastRunMode": "local"
@@ -22,17 +22,27 @@
       }
     }
   },
+  "session": {
+    "resetByType": {
+      "thread": { "mode": "idle", "idleMinutes": 5 },
+      "group": { "mode": "idle", "idleMinutes": 5 }
+    }
+  },
   "agents": {
     "defaults": {
       "model": {
-        "primary": "google/gemini-2.5-flash",
+        "primary": "google/gemini-3-pro-preview",
         "fallbacks": [
-          "anthropic/claude-haiku-4-5"
+          "anthropic/claude-sonnet-4-5"
         ]
       },
       "models": {
-        "google/gemini-2.5-flash": {},
-        "anthropic/claude-haiku-4-5": {}
+        "google/gemini-3-pro-preview": {
+          "alias": "gemini"
+        },
+        "anthropic/claude-sonnet-4-5": {
+          "alias": "sonnet"
+        }
       },
       "workspace": "/home/ubuntu/.openclaw/workspace",
       "contextPruning": {
@@ -64,26 +74,22 @@
         "name": "legislativo",
         "workspace": "/home/ubuntu/.openclaw/workspace-legislativo",
         "agentDir": "/home/ubuntu/.openclaw/agents/legislativo/agent",
-        "model": "google/gemini-flash-latest",
+        "model": "anthropic/claude-sonnet-4-5",
+        "contextPruning": {
+          "mode": "cache-ttl",
+          "ttl": "3m",
+          "hardClear": {
+            "enabled": true
+          }
+        },
         "heartbeat": {
-          "every": "30m",
-          "prompt": "Ejecuta el protocolo de HEARTBEAT.md centrándote ÚNICAMENTE en el canal ID: placeholder."
+          "every": "10m",
+          "target": "discord",
+          "prompt": "Ejecuta el protocolo de HEARTBEAT.md centrándote ÚNICAMENTE en el canal ID: placeholder. **INDICACIÓN IMPORTANTE**: Estamos en modo TURBO TEST, todos los tiempos han sido parametrizados en sunday_rule.py para procesar todas las fases en menos de 1 hora. Ejecuta en consecuencia."
         }
       }
     ]
   },
-  "bindings": [
-    {
-      "agentId": "legislativo",
-      "match": {
-        "channel": "discord",
-        "peer": {
-          "kind": "channel",
-          "id": "placeholder" 
-        }
-      }
-    }
-  ],
   "tools": {
     "web": {
       "search": {
@@ -95,6 +101,18 @@
       }
     }
   },
+  "bindings": [
+    {
+      "agentId": "legislativo",
+      "match": {
+        "channel": "discord",
+        "peer": {
+          "kind": "channel",
+          "id": "placeholder"
+        }
+      }
+    }
+  ],
   "messages": {
     "ackReactionScope": "group-mentions"
   },
@@ -106,7 +124,8 @@
     "discord": {
       "enabled": true,
       "token": "placeholder",
-      "groupPolicy": "open"
+      "groupPolicy": "open",
+      "historyLimit": 5
     }
   },
   "gateway": {
