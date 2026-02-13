@@ -11,54 +11,59 @@ El sistema adjunta mensajes recientes automáticamente. **IGNÓRALOS**.
 
 ## 🔄 PROCEDIMIENTO DE EJECUCIÓN MASIVA
 
-### 1. MANTENIMIENTO DE CARTERA (Iterar `state.md`)
+### 1. EL GUARDIÁN (Mantenimiento y Rescate)
+*Tu trabajo es asegurar que el plan siga vivo.*
 - Lee el archivo `state.md` completo.
 - **PARA CADA** fila/propuesta en estado `ACTIVO`:
-  1.  **Check de Cron:** ¿Existe su job en `cron.list`? ¿Está el cron parametrizado en "wakeMode": now?
-  2.  **Check de Tiempo:** Calcula si ya pasó el tiempo estipulado en su columna de fecha (usando `sunday_rule.py`).
-  3.  **Check de Ejecución:** Busca en `state.md` en la fila de Fase en qué fase está y el ID del mensaje de anuncio de fase, si no lo encuentras busca en el hilo mensajes de cambio de fase y corrige.
-  3.  **Acción:** Si luego de todo este chequeo el tiempo venció o falta el cron, ejecuta tú mismo la transición de fase **INMEDIATAMENTE**.
-  4.  *Si una fila da error, regístralo en el canal #logs-del sistema ID: placeholder y CONTINÚA con la siguiente fila.*
+  1.  **Auditoría de Crones:** Verifica en `cron.list` si existen los trabajos futuros programados para este hilo (Busca por nombre: `FASE2_[ID]`, `FASE3_[ID]`, `CIERRE_[ID]`).
+  2.  **Reparación:** Si falta algún cron futuro (y aún no ha pasado su fecha), **vuélvelo a crear** inmediatamente usando los tiempos de `sunday_rule.py`.
+  3.  **Rescate de Emergencia:** Calcula si la fecha de la fase actual YA VENCIÓ.
+       - Si venció y el estado en `state.md` no ha cambiado: **EJECUTA LA TRANSICIÓN TÚ MISMO AHORA**.
+         - **Acción:** Publica: "⚠️ Debido a un fallo técnico el anuncio de inicio para la FASE X no fue publicado. Confirmo que la FASE X ha iniciado hace X hora(s) y le quedan X hora(s)."
+         - **Persistencia:** Actualiza inmediatamente `state.md` a la nueva fase para que no se repita este error en la siguiente vuelta.
+  4.  *Si una fila da error, regístralo en logs internos y CONTINÚA con la siguiente.*
 
-### 2. ESCANEO DE NUEVOS INGRESOS (Iterar Discord)
+### 2. EL ARQUITECTO (Escaneo y Big Bang)
+*Aquí es donde nacen las propuestas y su destino.*
 - Ejecuta `discord.list_threads` en el canal padre `#caucus-legislativo` (`placeholder`).
 - Filtra la lista para obtener **TODOS** los hilos con prefijo `[PROPUESTA EN GESTACIÓN]`.
 - Compara contra `state.md`.
-- **PARA CADA** hilo que **NO** esté en `state.md`:
-  1.  **Captura:** Obtén el ID y el Título.
-  2.  **Alta:** Inicia el **Protocolo de Fase I** (ver abajo).
-  3.  **Registro:** Escribe la nueva entrada en `state.md`.
-  4.  *Continúa con el siguiente hilo nuevo, si existe.*
+- **PARA CADA** hilo nuevo que **NO** esté en `state.md`:
 
-### 3. ACTUALIZACIÓN DE ÁRBITROS (Iterar Pendientes)
+  1.  **Captura:** Obtén el ID y el Título.
+  2.  **Alta:** Registra en `state.md` como `FASE 1`.
+  3.  **Ejecución Inmediata:** Publica en el hilo el mensaje de **Inicio de FASE I** (ver AGENTS.md Punto 3).
+
+  4.  **💥 PLANIFICACIÓN TOTAL (BIG BANG):**
+      - Calcula **T1** (Fin Fase 1), **T2** (Fin Fase 2) y **T3** (Cierre) usando `sunday_rule.py`.
+      - **Crea AHORA MISMO los 3 crones futuros (Isolated):**
+        - **Cron A (Para T1):** Payload: "Ejecuta Transición a FASE II en el hilo [INSERTAR_ID]. Sigue AGENTS.md Punto 4."
+        - **Cron B (Para T2):** Payload: "Ejecuta Transición a FASE III en el hilo [INSERTAR_ID]. Sigue AGENTS.md Punto 4."
+        - **Cron C (Para T3):** Payload: "Ejecuta Cierre y Handoff en el hilo [INSERTAR_ID]. Sigue AGENTS.md Punto 5."
+      - *Nota:* Configura estos crones con `wakeMode: now`.
+
+### 3. ACTUALIZACIÓN DE ÁRBITROS
 - Filtra las filas de `state.md` donde `ARBITRO` == `PENDIENTE`.
 - **PARA CADA** uno de estos hilos:
   1.  Apuntando a SU `threadId`, busca: `[STATUS: ÁRBITRO-MODERADOR @... ASIGNADO]`.
   2.  Si existe -> Actualiza `state.md`.
   3.  Si no existe -> Ignora y pasa al siguiente.
-
 ---
 
-## 🧭 PROTOCOLO DE ENRUTAMIENTO Y EJECUCIÓN (CRÍTICO)
+## 🧭 PROTOCOLO DE ENRUTAMIENTO
 
-Tu comportamiento se rige por la **Ley de `AGENTS.md`**. No improvises.
+**CASO A: NUEVA PROPUESTA (Arquitecto)**
+- **Origen:** Detectado en Paso 2.
+- **Destino:** El `threadId` del hilo nuevo.
+- **Acción:** Ejecuta Punto 3 de AGENTS.md.
 
-**CASO A: NUEVA PROPUESTA (Detectada en Escaneo)**
-- **Origen:** Detectado por `discord.list_threads` (Paso 2).
-- **Destino (`channelId`):** El `threadId` del hilo detectado.
-- **Acción:** Ejecuta textualmente el **Punto 3 de AGENTS.md** ("FASE I: CLARIFICACIÓN").
-- **Persistencia:** Crea el registro en `state.md`.
+**CASO B: RESCATE DE EMERGENCIA (Guardián)**
+- **Origen:** Disparado por el Paso 1 (Item 3) al detectar vencimiento no procesado.
+- **Destino:** El ID registrado en la **Columna 1** de `state.md`.
+- **Acción:** Ejecuta el punto de AGENTS.md correspondiente a la fase que toca.
 
-**CASO B: TRANSICIONES DE FASE (Crones Aislados o Rescate)**
-- **Origen:** Disparado por un Cron programado en `"wakeMode": now`, o en su defecto por el Heartbeat al detectar vencimiento en `state.md`.
-- **Destino (`channelId`):** El ID registrado en la **Columna 1** de `state.md`.
-- **Acción:**
-  - Si toca Fase II: Ejecuta textualmente el **Punto 4 (Fase II) de AGENTS.md**.
-  - Si toca Fase III: Ejecuta textualmente el **Punto 4 (Fase III) de AGENTS.md**.
-  - Si toca Cierre: Ejecuta textualmente el **Punto 5 de AGENTS.md**.
-
-**🚫 REGLA DE ORO DE INFRAESTRUCTURA:**
-1. **EL HILO ES EL CANAL:** Para la herramienta `discord`, el parámetro `channelId` SIEMPRE debe ser el ID de la propuesta (Hilo).
+**🚫 REGLA DE ORO:**
+1. **EL HILO ES EL CANAL:** `channelId` SIEMPRE debe ser el ID de la propuesta (Hilo).
 2. **ZONA PROHIBIDA:** Bajo ninguna circunstancia uses el ID del canal raíz (`placeholder...`) para publicar actualizaciones. Si no tienes un ID de hilo válido en `state.md` o en el escaneo, **ABORTA** la operación.
 
 ---

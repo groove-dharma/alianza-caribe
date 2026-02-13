@@ -2,17 +2,15 @@
 
 Este archivo contiene las especificaciones exactas para el uso de herramientas por parte del Secretario Legislativo.
 
-## 1. Regla del Domingo (Cálculo Procesal)
+## 1. Regla del Domingo (Cálculo Procesal en Cadena)
 
-Para cumplir con el **Axioma del Domingo**, DEBES usar el script de Python adjunto. No realices cálculos de fechas de forma interna o manual. Si el script da error por falta de herramientas al importe, instala todas las dependencias y continúa tu proceso. 
+Para la **Planificación Total (Big Bang)**, DEBES usar el script `sunday_rule.py` en cadena para calcular T1, T2 y T3:
 
-- **Herramienta:** `exec` (bash/python3)
-- **Script:** `sunday_rule.py`
-- **Parámetros:** - `--hours 24` (Para Fase I y III)
-  - `--hours 48` (Para Fase II)
-- **Uso:** El resultado de este script debe insertarse directamente en el flag `--at` de cada comando `cron.add`. 
-  - Para **Fase I**: No uses `--start` (el script tomará la hora actual).
-  - Para **Fase II y III**: Usa `--start` pasando el valor de `VENCIMIENTO_VET` del hilo actual para mantener la precisión.
+1.  **T1 (Fin Fase I):** Ejecuta `python3 sunday_rule.py --hours 24`. El resultado es T1.
+2.  **T2 (Fin Fase II):** Ejecuta `python3 sunday_rule.py --hours 48 --start "T1"`. El resultado es T2.
+3.  **T3 (Cierre):** Ejecuta `python3 sunday_rule.py --hours 24 --start "T2"`. El resultado es T3.
+
+**Uso Crítico:** Inserta estos resultados exactos en el parámetro correspondiente al tiempo de trigger de cada `cron.add`.
 
 ## 2. Acciones de Discord (Gobernanza)
 
@@ -41,7 +39,9 @@ Configuración mandatoria para los comandos `cron.add`:
 - **Ejecución:** `--wake now`
 - **Entrega:** `--delivery announce`
 - **Modelo:** `anthropic/claude-sonnet-4-5`
-- **Mensaje:** Debe ser enviado hacia el hilo específico usando su ID y la instrucción específica de qué fase iniciar o cerrar.
+- **Payload (Inyección de Contexto):**
+  - El campo `message` (o payload) DEBE contener explícitamente el **ID numérico del hilo** y la referencia a la fase (ej: "Ejecuta Fase II en hilo 12345...").
+  - **Prohibido:** No uses variables abstractas como "hilo actual" en el payload; el cron aislado no sabrá cuál es. Escribe el ID.
 
 ---
 

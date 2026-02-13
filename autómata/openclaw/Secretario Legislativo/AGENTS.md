@@ -18,30 +18,39 @@ Los plazos de la LODL-01 se pausan los domingos (00:00 a 23:59 hora Venezuela `V
 
 ## 3. Escaneo de Hilos (Heartbeat - Cada 30m)
 
-Tu Heartbeat tiene una sola misión: **Detectar y Registrar**.
+Tu Heartbeat tiene una misión de **Arquitecto**: Detectar, Calcular Todo y Registrar.
 
 1. Escanea `#caucus-legislativo` usando `discord.threadList`.
 2. Filtra hilos con título: `[PROPUESTA EN GESTACIÓN]`.
 3. Si el hilo NO está en `state.md`:
-   - Publica en el hilo: "📢 **FASE I: CLARIFICACIÓN (24h)**. @Árbitro El proponente debe responder dudas."
-   - Publica etiqueta: `[STATUS: NECESITA ÁRBITRO-MODERADOR]`.
-   - Registra en `state.md` como `FASE 1 [ID DEL MENSAJE DE ANUNCIO]`.
-   - Ejecuta `cron.add` para la Transición a Fase II.
+   - **Acción Inmediata:** Publica en el hilo: "📢 **FASE I: CLARIFICACIÓN (24h)**. @Árbitro @Legislador El proponente debe responder dudas." y la etiqueta `[STATUS: NECESITA ÁRBITRO-MODERADOR]`.
+   - **Registro:** Escribe en `state.md` como `FASE 1 [ID DEL MENSAJE DE ANUNCIO]`.
+   - **PLANIFICACIÓN TOTAL (Big Bang):**
+     - Calcula T1 (Fin Fase 1), T2 (Fin Fase 2) y T3 (Cierre) usando `sunday_rule.py`.
+     - **Programa AHORA MISMO los 3 crones futuros usando INYECCIÓN DE CONTEXTO:**
+       1. **Cron Fase II (Fecha T1):** Payload: "Ejecuta Transición a FASE II en el Hilo ID [INSERTAR_ID_AQUI]. Sigue instrucciones de AGENTS.md Punto 4."
+       2. **Cron Fase III (Fecha T2):** Payload: "Ejecuta Transición a FASE III en el Hilo ID [INSERTAR_ID_AQUI]. Sigue instrucciones de AGENTS.md Punto 4."
+       3. **Cron Cierre (Fecha T3):** Payload: "Ejecuta Cierre y Handoff en el Hilo ID [INSERTAR_ID_AQUI]. Sigue instrucciones de AGENTS.md Punto 5."
+     - *Nota:* Configura `wakeMode: now` y asegura que el ID numérico esté escrito dentro del mensaje de texto `message`.
 
-## 4. Gestión de Fases (Crones Aislados)
+## 4. Gestión de Fases (Crones Aislados - Ejecución Pura)
+
+Estos crones son **EJECUTORES**. Su única tarea es publicar, actualizar y terminar.
+**IMPORTANTE:** El `threadId` objetivo te será suministrado explícitamente en tu mensaje de activación (Payload). Úsalo para todas las operaciones.
 
 Todas las transiciones deben usar: `--session isolated --wake now --delivery announce --model anthropic/claude-sonnet-4-5`.
 
-### Transición a FASE II (A las 24h efectivas)
-- **Acción:** Publicar "📢 **FASE II: FALSACIÓN (48h)**. Inicia ejercicio de acero (steel man)." Usar `discord.readMessages` en el hilo para buscar el patrón: [STATUS: ÁRBITRO-MODERADOR @... ASIGNADO].
-- **Actualizar:** `state.md` -> `FASE 2 [ID DEL MENSAJE DE ANUNCIO]`. De encontrarse el nombre/mención del Árbitro Moderador, actualiza la columna ARBITRO_MODERADOR en tu state.md
-- **Programar:** `cron.add` para Fase III.
+### Cron de transición a FASE II (Ejecutar al vencimiento de Fase I)
+- **Identificación:** Extrae el `threadId` de tu instrucción de inicio.
+- **Acción:** Publicar en ese hilo: "📢 **FASE II: FALSACIÓN (48h)**. Inicia ejercicio de acero (steel man)."
+- **Lectura:** Usar `discord.readMessages` en el hilo para buscar el patrón: `[STATUS: ÁRBITRO-MODERADOR @... ASIGNADO]`.
+- **Actualizar:** Edita `state.md` (busca la fila por el ID suministrado) cambiando el estado a `FASE 2 [ID DEL MENSAJE DE ANUNCIO]`. Si encontraste al Árbitro, actualiza también su columna.
 
-### Transición a FASE III (A las 48h efectivas)
-- **Acción:** Ejecutar `discord.poll` con opciones "👍 Elevar" y "👎 No elevar".
+### Cron de transición a FASE III (Ejecutar al vencimiento de Fase II)
+- **Identificación:** Extrae el `threadId` de tu instrucción de inicio.
+- **Acción:** Ejecutar `discord.poll` en el hilo con opciones "👍 Elevar" y "👎 No elevar".
 - **Publicar:** "🗳️ **FASE III: VOTACIÓN (24h)**. Inicia voto para proceso de elevación."
-- **Actualizar:** `state.md` -> `FASE 3 [ID DEL MENSAJE DE ANUNCIO]`.
-- **Programar:** `cron.add` para el Escrutinio Final.
+- **Actualizar:** Edita `state.md` cambiando el estado a `FASE 3 [ID DEL MENSAJE DE ANUNCIO]`.
 
 ## 5. Cierre y Handoff (Cron Final)
 
