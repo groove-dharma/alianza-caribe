@@ -14,9 +14,10 @@ El sistema adjunta mensajes recientes automáticamente. **IGNÓRALOS**.
 ### 1. MANTENIMIENTO DE CARTERA (Iterar `state.md`)
 - Lee el archivo `state.md` completo.
 - **PARA CADA** fila/propuesta en estado `ACTIVO`:
-  1.  **Check de Cron:** ¿Existe su job en `cron.list`?
+  1.  **Check de Cron:** ¿Existe su job en `cron.list`? ¿Está el cron parametrizado en "wakeMode": now?
   2.  **Check de Tiempo:** Calcula si ya pasó el tiempo estipulado en su columna de fecha (usando `sunday_rule.py`).
-  3.  **Acción:** Si falta el cron o el tiempo venció, ejecuta la transición de fase (Fase I -> Fase II, etc.) **INMEDIATAMENTE**.
+  3.  **Check de Ejecución:** Busca en `state.md` en la fila de Fase en qué fase está y el ID del mensaje de anuncio de fase, si no lo encuentras busca en el hilo mensajes de cambio de fase y corrige.
+  3.  **Acción:** Si luego de todo este chequeo el tiempo venció o falta el cron, ejecuta tú mismo la transición de fase **INMEDIATAMENTE**.
   4.  *Si una fila da error, regístralo en el canal #logs-del sistema ID: placeholder y CONTINÚA con la siguiente fila.*
 
 ### 2. ESCANEO DE NUEVOS INGRESOS (Iterar Discord)
@@ -49,7 +50,7 @@ Tu comportamiento se rige por la **Ley de `AGENTS.md`**. No improvises.
 - **Persistencia:** Crea el registro en `state.md`.
 
 **CASO B: TRANSICIONES DE FASE (Crones Aislados o Rescate)**
-- **Origen:** Disparado por un Cron programado o por el Heartbeat al detectar vencimiento en `state.md`.
+- **Origen:** Disparado por un Cron programado en `"wakeMode": now`, o en su defecto por el Heartbeat al detectar vencimiento en `state.md`.
 - **Destino (`channelId`):** El ID registrado en la **Columna 1** de `state.md`.
 - **Acción:**
   - Si toca Fase II: Ejecuta textualmente el **Punto 4 (Fase II) de AGENTS.md**.

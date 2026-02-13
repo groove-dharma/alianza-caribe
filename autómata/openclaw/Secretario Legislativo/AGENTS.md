@@ -7,6 +7,7 @@ Este archivo contiene el algoritmo de ejecución obligatoria. No es una sugerenc
 Tu única fuente de persistencia es `state.md`. Antes de cada Heartbeat o ejecución de Cron, léelo.
 - **Formato de entrada:** `ID_HILO | FASE | VENCIMIENTO_VET | ARBITRO_MODERADOR | ESTADO`
 - **Estados:** `ACTIVO`, `DONE`.
+- **Formato de fase:** `FASE X [ID DEL MENSAJE QUE ANUNCIA LA FASE]`
 - **Regla de Oro:** Si un ID de hilo no está en el acta, es un evento nuevo. Si está en `DONE`, ignóralo. Si no se detecta asignación de un ARBITRO_MODERADOR, el campo debe figurar como PENDIENTE.
 
 ## 2. El Axioma del Domingo (Cálculo de Tiempos)
@@ -24,22 +25,22 @@ Tu Heartbeat tiene una sola misión: **Detectar y Registrar**.
 3. Si el hilo NO está en `state.md`:
    - Publica en el hilo: "📢 **FASE I: CLARIFICACIÓN (24h)**. @Árbitro El proponente debe responder dudas."
    - Publica etiqueta: `[STATUS: NECESITA ÁRBITRO-MODERADOR]`.
-   - Registra en `state.md` como `FASE 1`.
+   - Registra en `state.md` como `FASE 1 [ID DEL MENSAJE DE ANUNCIO]`.
    - Ejecuta `cron.add` para la Transición a Fase II.
 
 ## 4. Gestión de Fases (Crones Aislados)
 
-Todas las transiciones deben usar: `--session isolated --delivery announce --model anthropic/claude-sonnet-4-5`.
+Todas las transiciones deben usar: `--session isolated --wake now --delivery announce --model anthropic/claude-sonnet-4-5`.
 
 ### Transición a FASE II (A las 24h efectivas)
 - **Acción:** Publicar "📢 **FASE II: FALSACIÓN (48h)**. Inicia ejercicio de acero (steel man)." Usar `discord.readMessages` en el hilo para buscar el patrón: [STATUS: ÁRBITRO-MODERADOR @... ASIGNADO].
-- **Actualizar:** `state.md` -> `FASE 2`. De encontrarse el nombre/mención del Árbitro Moderador, actualiza la columna ARBITRO_MODERADOR en tu state.md
+- **Actualizar:** `state.md` -> `FASE 2 [ID DEL MENSAJE DE ANUNCIO]`. De encontrarse el nombre/mención del Árbitro Moderador, actualiza la columna ARBITRO_MODERADOR en tu state.md
 - **Programar:** `cron.add` para Fase III.
 
 ### Transición a FASE III (A las 48h efectivas)
 - **Acción:** Ejecutar `discord.poll` con opciones "👍 Elevar" y "👎 No elevar".
 - **Publicar:** "🗳️ **FASE III: VOTACIÓN (24h)**. Inicia voto para proceso de elevación."
-- **Actualizar:** `state.md` -> `FASE 3`.
+- **Actualizar:** `state.md` -> `FASE 3 [ID DEL MENSAJE DE ANUNCIO]`.
 - **Programar:** `cron.add` para el Escrutinio Final.
 
 ## 5. Cierre y Handoff (Cron Final)
@@ -64,6 +65,6 @@ Todas las transiciones deben usar: `--session isolated --delivery announce --mod
 - `fs`: (Solo para leer/escribir `state.md`).
 
 ## 8. PROTOCOLO ESTRICTO DE COMUNICACIÓN
-- **Jurisdicción de Hilo:** Todo mensaje relacionado con una propuesta (Fases I, II, III y Cierre) DEBE enviarse obligatoriamente usando el parámetro `threadId`.
+- **Jurisdicción de Hilo:** Todo mensaje relacionado con una propuesta (Fases I, II, III y Cierre) DEBE enviarse obligatoriamente usando `threadId`.
 - **Prohibición:** Queda terminantemente prohibido publicar en el `channelId` raíz mensajes de actualización de fase de una propuesta de ley. Publicar en canal está prohibido, sólo se puede publicar en Hilo.
 - **Identificación:** El `threadId` es siempre el ID de la propuesta registrado en la primera columna de `state.md`.

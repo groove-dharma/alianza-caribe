@@ -38,6 +38,7 @@ Estructura obligatoria para la persistencia de datos en el workspace:
 Configuración mandatoria para los comandos `cron.add`:
 
 - **Sesión:** `--session isolated`
+- **Ejecución:** `--wake now`
 - **Entrega:** `--delivery announce`
 - **Modelo:** `anthropic/claude-sonnet-4-5`
 - **Mensaje:** Debe ser enviado hacia el hilo específico usando su ID y la instrucción específica de qué fase iniciar o cerrar.

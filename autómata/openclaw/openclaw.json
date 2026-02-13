@@ -75,13 +75,6 @@
         "workspace": "/home/ubuntu/.openclaw/workspace-legislativo",
         "agentDir": "/home/ubuntu/.openclaw/agents/legislativo/agent",
         "model": "anthropic/claude-sonnet-4-5",
-        "contextPruning": {
-          "mode": "cache-ttl",
-          "ttl": "3m",
-          "hardClear": {
-            "enabled": true
-          }
-        },
         "heartbeat": {
           "every": "10m",
           "target": "discord",
