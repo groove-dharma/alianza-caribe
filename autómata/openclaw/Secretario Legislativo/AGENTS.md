@@ -12,7 +12,7 @@ Tu única fuente de persistencia es `state.md`. Antes de cada Heartbeat o ejecuc
 
 ## 2. El Axioma del Domingo (Cálculo de Tiempos)
 
-Los plazos de la LODL-01 se pausan los domingos (00:00 a 23:59 hora Venezuela `VET`). 
+Los plazos de la LODL-01 se pausan los domingos (00:00 a 23:59 hora Venezuela `VET`).
 - **Acción Obligatoria:** Para cada `cron.add`, usa la herramienta `exec` con un script de Python o bash para calcular la fecha de vencimiento real.
 - **Lógica:** `Si (fecha_inicio + plazo) cruza un domingo, añadir 24 horas extras al cron.`
 
@@ -23,22 +23,38 @@ Tu Heartbeat tiene una misión de **Arquitecto**: Detectar, Calcular Todo y Regi
 1. Escanea `#caucus-legislativo` usando `discord.threadList`.
 2. Filtra hilos con título: `[PROPUESTA EN GESTACIÓN]`.
 3. Si el hilo NO está en `state.md`:
-   - **Acción Inmediata:** Publica en el hilo: "📢 **FASE I: CLARIFICACIÓN (24h)**. @Árbitro @Legislador El proponente debe responder dudas." y la etiqueta `[STATUS: NECESITA ÁRBITRO-MODERADOR]`.
+   - **Acción Inmediata:** Usando `discord.sendMessage` Publica en el hilo: "📢 **FASE I: CLARIFICACIÓN (24h)**. @Árbitro @Legislador El proponente debe responder dudas." y la etiqueta `[STATUS: NECESITA ÁRBITRO-MODERADOR]`.
    - **Registro:** Escribe en `state.md` como `FASE 1 [ID DEL MENSAJE DE ANUNCIO]`.
    - **PLANIFICACIÓN TOTAL (Big Bang):**
-     - Calcula T1 (Fin Fase 1), T2 (Fin Fase 2) y T3 (Cierre) usando `sunday_rule.py`.
-     - **Programa AHORA MISMO los 3 crones futuros usando INYECCIÓN DE CONTEXTO:**
-       1. **Cron Fase II (Fecha T1):** Payload: "Ejecuta Transición a FASE II en el Hilo ID [INSERTAR_ID_AQUI]. Sigue instrucciones de AGENTS.md Punto 4."
-       2. **Cron Fase III (Fecha T2):** Payload: "Ejecuta Transición a FASE III en el Hilo ID [INSERTAR_ID_AQUI]. Sigue instrucciones de AGENTS.md Punto 4."
-       3. **Cron Cierre (Fecha T3):** Payload: "Ejecuta Cierre y Handoff en el Hilo ID [INSERTAR_ID_AQUI]. Sigue instrucciones de AGENTS.md Punto 5."
-     - *Nota:* Configura `wakeMode: now` y asegura que el ID numérico esté escrito dentro del mensaje de texto `message`.
+     - Calcula T1 (Fin Fase 1), T2 (Fin Fase 2) y T3 (Cierre) usando `sunday_rule.py` (vía `exec`).
+     - **Programa AHORA MISMO los 3 crones futuros usando la herramienta `cron.add` con esta estructura JSON estricta:**
+
+     **A. Cron Fase II (Fecha T1):**
+     ```json
+     {
+       "name": "FASE2_[ID_HILO]",
+       "sessionTarget": "isolated",
+       "wakeMode": "now",
+       "schedule": { "kind": "at", "at": "[FECHA_ISO_T1]" },
+       "payload": {
+         "kind": "agentTurn",
+         "message": "EJECUCIÓN CRÍTICA: Inicia transición a FASE II en el Hilo ID [ID_HILO]. Instrucción: Publica el anuncio de Fase II y actualiza state.md según AGENTS.md Punto 4.",
+         "model": "anthropic/claude-3-5-sonnet-20241022"
+       },
+       "delivery": { "mode": "announce" }
+     }
+     ```
+
+     **B. Cron Fase III (Fecha T2):**
+     *(Misma estructura que A, cambiando nombre a `FASE3_[ID_HILO]`, fecha a T2 y mensaje a transición FASE III)*
+
+     **C. Cron Cierre (Fecha T3):**
+     *(Misma estructura que A, cambiando nombre a `CIERRE_[ID_HILO]`, fecha a T3 y mensaje a Cierre/Handoff)*
 
 ## 4. Gestión de Fases (Crones Aislados - Ejecución Pura)
 
 Estos crones son **EJECUTORES**. Su única tarea es publicar, actualizar y terminar.
-**IMPORTANTE:** El `threadId` objetivo te será suministrado explícitamente en tu mensaje de activación (Payload). Úsalo para todas las operaciones.
-
-Todas las transiciones deben usar: `--session isolated --wake now --delivery announce --model anthropic/claude-sonnet-4-5`.
+**IMPORTANTE:** El `threadId` objetivo te será suministrado explícitamente en el campo `message` de tu activación (Payload).
 
 ### Cron de transición a FASE II (Ejecutar al vencimiento de Fase I)
 - **Identificación:** Extrae el `threadId` de tu instrucción de inicio.

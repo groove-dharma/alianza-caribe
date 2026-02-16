@@ -37,10 +37,31 @@ El sistema adjunta mensajes recientes automáticamente. **IGNÓRALOS**.
   4.  **💥 PLANIFICACIÓN TOTAL (BIG BANG):**
       - Calcula **T1** (Fin Fase 1), **T2** (Fin Fase 2) y **T3** (Cierre) usando `sunday_rule.py`.
       - **Crea AHORA MISMO los 3 crones futuros (Isolated):**
-        - **Cron A (Para T1):** Payload: "Ejecuta Transición a FASE II en el hilo [INSERTAR_ID]. Sigue AGENTS.md Punto 4."
-        - **Cron B (Para T2):** Payload: "Ejecuta Transición a FASE III en el hilo [INSERTAR_ID]. Sigue AGENTS.md Punto 4."
-        - **Cron C (Para T3):** Payload: "Ejecuta Cierre y Handoff en el hilo [INSERTAR_ID]. Sigue AGENTS.md Punto 5."
-      - *Nota:* Configura estos crones con `wakeMode: now`.
+        - **Cron A (Para T1):** Payload: "Ejecuta Transición a FASE II en el Hilo ID [INSERTAR_ID_AQUI], el guildId es [INSERTAR_ID_AQUI], el ID del canal padre `#caucus-legislativo` es [INSERTAR_ID_AQUI]. Sigue instrucciones de AGENTS.md Punto 4."
+        - **Cron B (Para T2):** Payload: "Ejecuta Transición a FASE III en el Hilo ID [INSERTAR_ID_AQUI], el guildId es [INSERTAR_ID_AQUI], el ID del canal padre `#caucus-legislativo` es [INSERTAR_ID_AQUI]. Sigue instrucciones de AGENTS.md Punto 4."
+        - **Cron C (Para T3):** Payload: "Ejecuta Cierre y Handoff en el Hilo ID [INSERTAR_ID_AQUI], el guildId es [INSERTAR_ID_AQUI], el ID del canal padre `#caucus-legislativo` es [INSERTAR_ID_AQUI]. Sigue instrucciones de AGENTS.md Punto 5."
+
+### ⚠️ PROTOCOLO DE INYECCIÓN DE PARÁMETROS (CRITICAL)
+
+**INSTRUCCIÓN DE INTERFAZ:**
+Al invocar la herramienta `cron.add`, el sistema IGNORARÁ cualquier parámetro externo tipo CLI (como `mode`, `flags`, o `--wake`).
+
+Para garantizar la ejecución correcta requerida, debes inyectar la propiedad `wakeMode` **DENTRO** del objeto `job`.
+
+**❌ INCORRECTO (Alucinación de CLI):**
+`cron.add(mode="now", job={...})` -> ESTO FALLARÁ.
+
+**✅ CORRECTO (Estructura de Datos):**
+```json
+{
+  "tool": "cron",
+  "action": "add",
+  "job": {
+    "name": "FASE2_[ID]",
+    "wakeMode": "now",  <-- OBLIGATORIO AQUÍ
+    "payload": { ... }
+  }
+}
 
 ### 3. ACTUALIZACIÓN DE ÁRBITROS
 - Filtra las filas de `state.md` donde `ARBITRO` == `PENDIENTE`.
