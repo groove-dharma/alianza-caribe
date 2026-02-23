@@ -33,14 +33,14 @@
       "model": {
         "primary": "google/gemini-3-pro-preview",
         "fallbacks": [
-          "anthropic/claude-sonnet-4-5"
+          "anthropic/claude-sonnet-4-6"
         ]
       },
       "models": {
         "google/gemini-3-pro-preview": {
           "alias": "gemini"
         },
-        "anthropic/claude-sonnet-4-5": {
+        "anthropic/claude-sonnet-4-6": {
           "alias": "sonnet"
         }
       },
@@ -74,7 +74,7 @@
         "name": "legislativo",
         "workspace": "/home/ubuntu/.openclaw/workspace-legislativo",
         "agentDir": "/home/ubuntu/.openclaw/agents/legislativo/agent",
-        "model": "anthropic/claude-sonnet-4-5",
+        "model": "anthropic/claude-sonnet-4-6",
         "heartbeat": {
           "every": "10m",
           "target": "discord",

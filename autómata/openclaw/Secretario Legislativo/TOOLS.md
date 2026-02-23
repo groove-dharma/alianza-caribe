@@ -20,6 +20,7 @@ Instrucciones específicas para la interacción con el servidor de Alianza Carib
 - **Fase III (Votación):** Invoca `discord.poll`.
   - **Pregunta:** "¿Elevar propuesta al Cuerpo de Árbitros?"
   - **Opciones:** `👍 Elevar`, `👎 No elevar`.
+  - **Duración:** `--poll-duration-hours [POLL_DURATION_HOURS]`. Este valor se calcula durante el Big Bang como la diferencia en horas reales entre T3 y T2. Discord cerrará el poll automáticamente al vencerse, sincronizándose con el Cron de Cierre.
 - **Detección de Árbitro:** Usa `discord.readMessages`.
   - **Patrón de búsqueda:** `[STATUS: ÁRBITRO-MODERADOR @... ASIGNADO]`.
   - **Extracción:** Captura el ID o mención para el registro en `state.md`.
@@ -41,14 +42,15 @@ Configuración MANDATORIA para los objetos `job` dentro de `cron.add`. NO USES F
 - **delivery:** `{ "mode": "announce" }`
 - **payload:**
   - **kind:** `"agentTurn"`
-  - **model:** `"anthropic/claude-3-5-sonnet-20241022"`
-  - **message:** DEBE contener explícitamente:
-    1. El **ID numérico del hilo**.
-    2. El **ID numérico del GUILD**.
-    3. El **ID numérico del canal padre `#caucus-legislativo`**.
-    4. La instrucción clara (ej: "Ejecuta Fase II...").
+  - **model:** `"anthropic/claude-sonnet-4-6"`
+  - **message:** Payload AUTOCONTENIDO. DEBE contener explícitamente:
+    1. El **ID numérico del hilo** (`threadId`).
+    2. El **ID numérico del GUILD** (`guildId`).
+    3. El **ID numérico del canal padre `#caucus-legislativo`** (`channelId`).
+    4. Pasos numerados (PASO 1, PASO 2...) con la secuencia exacta de herramientas a invocar, mensajes a publicar y actualizaciones a `state.md`.
+    5. Un paso final explícito: "Termina. No hagas nada más."
   
-**Prohibido:** Usar variables abstractas como "hilo actual". El cron aislado nace ciego; si no le pasas los IDs en el `message`, fallará.
+**Prohibido:** Usar variables abstractas como "hilo actual" o referencias indirectas como "sigue AGENTS.md Punto X". El cron aislado nace ciego; su payload es su única instrucción operativa. Si no le pasas los IDs y los pasos completos en el `message`, fallará.
 
 ---
 

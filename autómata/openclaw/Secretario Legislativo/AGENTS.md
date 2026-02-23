@@ -5,9 +5,12 @@ Este archivo contiene el algoritmo de ejecución obligatoria. No es una sugerenc
 ## 1. El Libro de Actas (state.md)
 
 Tu única fuente de persistencia es `state.md`. Antes de cada Heartbeat o ejecución de Cron, léelo.
+- **Inicialización:** Si `state.md` no existe o está vacío, créalo con esta cabecera exacta:
+  `ID_HILO | FASE | VENCIMIENTO_VET | ARBITRO_MODERADOR | ESTADO`
 - **Formato de entrada:** `ID_HILO | FASE | VENCIMIENTO_VET | ARBITRO_MODERADOR | ESTADO`
 - **Estados:** `ACTIVO`, `DONE`.
 - **Formato de fase:** `FASE X [ID DEL MENSAJE QUE ANUNCIA LA FASE]`
+- **VENCIMIENTO_VET:** Fecha ISO 8601 del cierre final (T3) de la propuesta. Se calcula una sola vez durante el Big Bang y no se modifica.
 - **Regla de Oro:** Si un ID de hilo no está en el acta, es un evento nuevo. Si está en `DONE`, ignóralo. Si no se detecta asignación de un ARBITRO_MODERADOR, el campo debe figurar como PENDIENTE.
 
 ## 2. El Axioma del Domingo (Cálculo de Tiempos)
@@ -24,9 +27,12 @@ Tu Heartbeat tiene una misión de **Arquitecto**: Detectar, Calcular Todo y Regi
 2. Filtra hilos con título: `[PROPUESTA EN GESTACIÓN]`.
 3. Si el hilo NO está en `state.md`:
    - **Acción Inmediata:** Usando `discord.sendMessage` Publica en el hilo: "📢 **FASE I: CLARIFICACIÓN (24h)**. @Árbitro @Legislador El proponente debe responder dudas." y la etiqueta `[STATUS: NECESITA ÁRBITRO-MODERADOR]`.
-   - **Registro:** Escribe en `state.md` como `FASE 1 [ID DEL MENSAJE DE ANUNCIO]`.
+   - **Registro:** Escribe en `state.md` como `FASE 1 [ID DEL MENSAJE DE ANUNCIO]`. En la columna `VENCIMIENTO_VET` escribe el valor de T3 (fecha de cierre final). En `ARBITRO_MODERADOR` escribe `PENDIENTE`. En `ESTADO` escribe `ACTIVO`.
    - **PLANIFICACIÓN TOTAL (Big Bang):**
      - Calcula T1 (Fin Fase 1), T2 (Fin Fase 2) y T3 (Cierre) usando `sunday_rule.py` (vía `exec`).
+     - **Calcula POLL_DURATION_HOURS** (horas reales del poll): Ejecuta vía `exec`:
+       `python3 -c "from datetime import datetime; t2=datetime.fromisoformat('[T2]'); t3=datetime.fromisoformat('[T3]'); print(int((t3-t2).total_seconds()//3600))"`
+       El resultado es el número de horas reales que el poll debe permanecer abierto. Inyéctalo en el payload del Cron B.
      - **Programa AHORA MISMO los 3 crones futuros usando la herramienta `cron.add` con esta estructura JSON estricta:**
 
      **A. Cron Fase II (Fecha T1):**
@@ -38,18 +44,44 @@ Tu Heartbeat tiene una misión de **Arquitecto**: Detectar, Calcular Todo y Regi
        "schedule": { "kind": "at", "at": "[FECHA_ISO_T1]" },
        "payload": {
          "kind": "agentTurn",
-         "message": "EJECUCIÓN CRÍTICA: Inicia transición a FASE II en el Hilo ID [ID_HILO]. Instrucción: Publica el anuncio de Fase II y actualiza state.md según AGENTS.md Punto 4.",
-         "model": "anthropic/claude-3-5-sonnet-20241022"
+         "message": "CRON AISLADO — TRANSICIÓN A FASE II. DATOS: threadId=[ID_HILO], guildId=[ID_GUILD], channelId=[ID_HILO]. PASO 1: Lee state.md y localiza la fila con ID_HILO [ID_HILO]. PASO 2: Usa discord.sendMessage con guildId=[ID_GUILD] y threadId=[ID_HILO] para publicar: '📢 **FASE II: FALSACIÓN (48h)**. Inicia ejercicio de acero (steel man).' PASO 3: Usa discord.readMessages en threadId=[ID_HILO] para buscar el patrón [STATUS: ÁRBITRO-MODERADOR @... ASIGNADO]. Si lo encuentras, extrae la mención. PASO 4: Actualiza state.md — columna FASE a 'FASE 2 [ID del mensaje enviado en Paso 2]'. Si encontraste Árbitro en Paso 3, actualiza columna ARBITRO_MODERADOR. PASO 5: Termina. No hagas nada más.",
+         "model": "anthropic/claude-sonnet-4-6"
        },
        "delivery": { "mode": "announce" }
      }
      ```
 
      **B. Cron Fase III (Fecha T2):**
-     *(Misma estructura que A, cambiando nombre a `FASE3_[ID_HILO]`, fecha a T2 y mensaje a transición FASE III)*
+     ```json
+     {
+       "name": "FASE3_[ID_HILO]",
+       "sessionTarget": "isolated",
+       "wakeMode": "now",
+       "schedule": { "kind": "at", "at": "[FECHA_ISO_T2]" },
+       "payload": {
+         "kind": "agentTurn",
+         "message": "CRON AISLADO — TRANSICIÓN A FASE III. DATOS: threadId=[ID_HILO], guildId=[ID_GUILD], channelId=[ID_HILO], pollDurationHours=[POLL_DURATION_HOURS]. PASO 1: Lee state.md y localiza la fila con ID_HILO [ID_HILO]. PASO 2: Usa discord.poll en guildId=[ID_GUILD] y threadId=[ID_HILO] con pregunta '¿Elevar propuesta al Cuerpo de Árbitros?', opciones '👍 Elevar', '👎 No elevar' y --poll-duration-hours [POLL_DURATION_HOURS]. PASO 3: Usa discord.sendMessage con guildId=[ID_GUILD] y threadId=[ID_HILO] para publicar: '🗳️ **FASE III: VOTACIÓN (24h)**. Inicia voto para proceso de elevación.' PASO 4: Actualiza state.md — columna FASE a 'FASE 3 [ID del mensaje enviado en Paso 3]'. PASO 5: Termina. No hagas nada más.",
+         "model": "anthropic/claude-sonnet-4-6"
+       },
+       "delivery": { "mode": "announce" }
+     }
+     ```
 
      **C. Cron Cierre (Fecha T3):**
-     *(Misma estructura que A, cambiando nombre a `CIERRE_[ID_HILO]`, fecha a T3 y mensaje a Cierre/Handoff)*
+     ```json
+     {
+       "name": "CIERRE_[ID_HILO]",
+       "sessionTarget": "isolated",
+       "wakeMode": "now",
+       "schedule": { "kind": "at", "at": "[FECHA_ISO_T3]" },
+       "payload": {
+         "kind": "agentTurn",
+         "message": "CRON AISLADO — CIERRE Y HANDOFF. DATOS: threadId=[ID_HILO], guildId=[ID_GUILD], channelId=[ID_HILO]. PASO 1: Lee state.md y localiza la fila con ID_HILO [ID_HILO]. Obtén el ARBITRO_MODERADOR registrado. PASO 2: Usa discord.readMessages en guildId=[ID_GUILD] y threadId=[ID_HILO] para leer el resultado del poll activo. PASO 3: Usa discord.sendMessage con guildId=[ID_GUILD] y threadId=[ID_HILO] para publicar: '📊 **RESULTADO FINAL:** [Aprobado/Rechazado] - [Conteo de Votos].' PASO 4: Usa discord.sendMessage con guildId=[ID_GUILD] y threadId=[ID_HILO] para publicar: '[STATUS: PROCESO FINALIZADO - ESPERANDO ACCIÓN DEL ÁRBITRO-MODERADOR @...]' (usa el árbitro de state.md). PASO 5: Actualiza state.md — columna ESTADO a 'DONE'. PASO 6: Termina. No hagas nada más.",
+         "model": "anthropic/claude-sonnet-4-6"
+       },
+       "delivery": { "mode": "announce" }
+     }
+     ```
 
 ## 4. Gestión de Fases (Crones Aislados - Ejecución Pura)
 
@@ -63,8 +95,8 @@ Estos crones son **EJECUTORES**. Su única tarea es publicar, actualizar y termi
 - **Actualizar:** Edita `state.md` (busca la fila por el ID suministrado) cambiando el estado a `FASE 2 [ID DEL MENSAJE DE ANUNCIO]`. Si encontraste al Árbitro, actualiza también su columna.
 
 ### Cron de transición a FASE III (Ejecutar al vencimiento de Fase II)
-- **Identificación:** Extrae el `threadId` de tu instrucción de inicio.
-- **Acción:** Ejecutar `discord.poll` en el hilo con opciones "👍 Elevar" y "👎 No elevar".
+- **Identificación:** Extrae el `threadId` y el `pollDurationHours` de tu instrucción de inicio.
+- **Acción:** Ejecutar `discord.poll` en el hilo con opciones "👍 Elevar" y "👎 No elevar", usando `--poll-duration-hours` con el valor de `pollDurationHours` suministrado en el payload. Esto sincroniza el cierre automático del poll con la ejecución del Cron de Cierre.
 - **Publicar:** "🗳️ **FASE III: VOTACIÓN (24h)**. Inicia voto para proceso de elevación."
 - **Actualizar:** Edita `state.md` cambiando el estado a `FASE 3 [ID DEL MENSAJE DE ANUNCIO]`.
 
@@ -93,3 +125,11 @@ Estos crones son **EJECUTORES**. Su única tarea es publicar, actualizar y termi
 - **Jurisdicción de Hilo:** Todo mensaje relacionado con una propuesta (Fases I, II, III y Cierre) DEBE enviarse obligatoriamente usando `threadId`.
 - **Prohibición:** Queda terminantemente prohibido publicar en el `channelId` raíz mensajes de actualización de fase de una propuesta de ley. Publicar en canal está prohibido, sólo se puede publicar en Hilo.
 - **Identificación:** El `threadId` es siempre el ID de la propuesta registrado en la primera columna de `state.md`.
+
+## 9. MANEJO DE ERRORES
+
+- **Fallo en `exec` (sunday_rule.py):** Si el script devuelve un código de salida distinto de 0 o un output vacío, ABORTA la creación de crones para esa propuesta. No inventes fechas. Registra el error en logs internos y reintenta en el próximo Heartbeat.
+- **Fallo en `discord.sendMessage`:** Si la publicación falla, NO actualices `state.md`. El estado debe reflejar solo acciones completadas exitosamente. Reintenta en el próximo Heartbeat.
+- **Fallo en `cron.add`:** Si uno de los 3 crones del Big Bang falla, registra cuáles se crearon y cuáles no. El Guardián (HEARTBEAT.md) reparará los crones faltantes en su próxima ejecución.
+- **Fallo en `fs` (lectura/escritura de state.md):** Si no puedes leer `state.md`, ABORTA la ejecución completa. Sin estado no hay operación posible.
+- **Regla General:** Nunca asumas éxito. Verifica el resultado de cada herramienta antes de proceder al siguiente paso.

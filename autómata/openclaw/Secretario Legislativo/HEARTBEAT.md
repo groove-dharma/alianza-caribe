@@ -36,10 +36,14 @@ El sistema adjunta mensajes recientes automáticamente. **IGNÓRALOS**.
 
   4.  **💥 PLANIFICACIÓN TOTAL (BIG BANG):**
       - Calcula **T1** (Fin Fase 1), **T2** (Fin Fase 2) y **T3** (Cierre) usando `sunday_rule.py`.
-      - **Crea AHORA MISMO los 3 crones futuros (Isolated):**
-        - **Cron A (Para T1):** Payload: "Ejecuta Transición a FASE II en el Hilo ID [INSERTAR_ID_AQUI], el guildId es [INSERTAR_ID_AQUI], el ID del canal padre `#caucus-legislativo` es [INSERTAR_ID_AQUI]. Sigue instrucciones de AGENTS.md Punto 4."
-        - **Cron B (Para T2):** Payload: "Ejecuta Transición a FASE III en el Hilo ID [INSERTAR_ID_AQUI], el guildId es [INSERTAR_ID_AQUI], el ID del canal padre `#caucus-legislativo` es [INSERTAR_ID_AQUI]. Sigue instrucciones de AGENTS.md Punto 4."
-        - **Cron C (Para T3):** Payload: "Ejecuta Cierre y Handoff en el Hilo ID [INSERTAR_ID_AQUI], el guildId es [INSERTAR_ID_AQUI], el ID del canal padre `#caucus-legislativo` es [INSERTAR_ID_AQUI]. Sigue instrucciones de AGENTS.md Punto 5."
+      - **Calcula POLL_DURATION_HOURS** (horas reales del poll): Ejecuta vía `exec`:
+        `python3 -c "from datetime import datetime; t2=datetime.fromisoformat('[T2]'); t3=datetime.fromisoformat('[T3]'); print(int((t3-t2).total_seconds()//3600))"`
+        El resultado es el número de horas que el poll de Discord debe permanecer abierto. Inyéctalo en el payload del Cron B.
+      - **Crea AHORA MISMO los 3 crones futuros (Isolated) con payloads autocontenidos.**
+        Cada payload DEBE ser una receta completa paso-a-paso. No uses referencias indirectas como "sigue AGENTS.md Punto X". El cron aislado nace ciego; su payload es su única instrucción operativa.
+        - **Cron A (Para T1):** Payload: "CRON AISLADO — TRANSICIÓN A FASE II. DATOS: threadId=[ID_HILO], guildId=[ID_GUILD], channelId=[ID_HILO]. PASO 1: Lee state.md y localiza la fila con ID_HILO [ID_HILO]. PASO 2: Usa discord.sendMessage con guildId=[ID_GUILD] y threadId=[ID_HILO] para publicar: '📢 **FASE II: FALSACIÓN (48h)**. Inicia ejercicio de acero (steel man).' PASO 3: Usa discord.readMessages en threadId=[ID_HILO] para buscar el patrón [STATUS: ÁRBITRO-MODERADOR @... ASIGNADO]. Si lo encuentras, extrae la mención. PASO 4: Actualiza state.md — columna FASE a 'FASE 2 [ID del mensaje enviado en Paso 2]'. Si encontraste Árbitro en Paso 3, actualiza columna ARBITRO_MODERADOR. PASO 5: Termina."
+        - **Cron B (Para T2):** Payload: "CRON AISLADO — TRANSICIÓN A FASE III. DATOS: threadId=[ID_HILO], guildId=[ID_GUILD], channelId=[ID_HILO], pollDurationHours=[POLL_DURATION_HOURS]. PASO 1: Lee state.md y localiza la fila con ID_HILO [ID_HILO]. PASO 2: Usa discord.poll en guildId=[ID_GUILD] y threadId=[ID_HILO] con pregunta '¿Elevar propuesta al Cuerpo de Árbitros?', opciones '👍 Elevar', '👎 No elevar' y --poll-duration-hours [POLL_DURATION_HOURS]. PASO 3: Usa discord.sendMessage con guildId=[ID_GUILD] y threadId=[ID_HILO] para publicar: '🗳️ **FASE III: VOTACIÓN (24h)**. Inicia voto para proceso de elevación.' PASO 4: Actualiza state.md — columna FASE a 'FASE 3 [ID del mensaje enviado en Paso 3]'. PASO 5: Termina."
+        - **Cron C (Para T3):** Payload: "CRON AISLADO — CIERRE Y HANDOFF. DATOS: threadId=[ID_HILO], guildId=[ID_GUILD], channelId=[ID_HILO]. PASO 1: Lee state.md y localiza la fila con ID_HILO [ID_HILO]. Obtén el ARBITRO_MODERADOR registrado. PASO 2: Usa discord.readMessages en guildId=[ID_GUILD] y threadId=[ID_HILO] para leer el resultado del poll (ya cerrado por Discord automáticamente). PASO 3: Usa discord.sendMessage para publicar: '📊 **RESULTADO FINAL:** [Aprobado/Rechazado] - [Conteo de Votos].' PASO 4: Usa discord.sendMessage para publicar: '[STATUS: PROCESO FINALIZADO - ESPERANDO ACCIÓN DEL ÁRBITRO-MODERADOR @...]' (usa el árbitro de state.md). PASO 5: Actualiza state.md — columna ESTADO a 'DONE'. PASO 6: Termina."
 
 ### ⚠️ PROTOCOLO DE INYECCIÓN DE PARÁMETROS (CRITICAL)
 
@@ -58,10 +62,13 @@ Para garantizar la ejecución correcta requerida, debes inyectar la propiedad `w
   "action": "add",
   "job": {
     "name": "FASE2_[ID]",
-    "wakeMode": "now",  <-- OBLIGATORIO AQUÍ
+    "wakeMode": "now",
     "payload": { ... }
   }
 }
+```
+
+**Nota:** La propiedad `wakeMode: "now"` DEBE estar dentro del objeto `job`, nunca como flag externo.
 
 ### 3. ACTUALIZACIÓN DE ÁRBITROS
 - Filtra las filas de `state.md` donde `ARBITRO` == `PENDIENTE`.
