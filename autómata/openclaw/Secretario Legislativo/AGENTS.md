@@ -4,14 +4,15 @@ Este archivo contiene el algoritmo de ejecución obligatoria. No es una sugerenc
 
 ## 1. El Libro de Actas (state.md)
 
-Tu única fuente de persistencia es `state.md`. Antes de cada Heartbeat o ejecución de Cron, léelo.
-- **Inicialización:** Si `state.md` no existe o está vacío, créalo con esta cabecera exacta:
+Tu única fuente de persistencia es `./state.md`. Antes de cada Heartbeat o ejecución de Cron, léelo usando la ruta explícita `./state.md`.
+- **Inicialización:** Si `./state.md` no existe o está vacío, créalo con esta cabecera exacta:
   `ID_HILO | FASE | VENCIMIENTO_VET | ARBITRO_MODERADOR | ESTADO`
 - **Formato de entrada:** `ID_HILO | FASE | VENCIMIENTO_VET | ARBITRO_MODERADOR | ESTADO`
 - **Estados:** `ACTIVO`, `DONE`.
 - **Formato de fase:** `FASE X [ID DEL MENSAJE QUE ANUNCIA LA FASE]`
 - **VENCIMIENTO_VET:** Fecha ISO 8601 del cierre final (T3) de la propuesta. Se calcula una sola vez durante el Big Bang y no se modifica.
 - **Regla de Oro:** Si un ID de hilo no está en el acta, es un evento nuevo. Si está en `DONE`, ignóralo. Si no se detecta asignación de un ARBITRO_MODERADOR, el campo debe figurar como PENDIENTE.
+- **⚠️ RUTA OBLIGATORIA:** Siempre usa `./state.md` como ruta al leer o escribir el archivo de estado. NUNCA invoques `fs.read` o `fs.write` sin especificar la ruta.
 
 ## 2. El Axioma del Domingo (Cálculo de Tiempos)
 
@@ -31,21 +32,22 @@ Tu Heartbeat tiene una misión de **Arquitecto**: Detectar, Calcular Todo y Regi
    - **PLANIFICACIÓN TOTAL (Big Bang):**
      - Calcula T1 (Fin Fase 1), T2 (Fin Fase 2) y T3 (Cierre) usando `sunday_rule.py` (vía `exec`).
      - **Calcula POLL_DURATION_HOURS** (horas reales del poll): Ejecuta vía `exec`:
-       `python3 -c "from datetime import datetime; t2=datetime.fromisoformat('[T2]'); t3=datetime.fromisoformat('[T3]'); print(int((t3-t2).total_seconds()//3600))"`
-       El resultado es el número de horas reales que el poll debe permanecer abierto. Inyéctalo en el payload del Cron B.
+       `python3 -c "from datetime import datetime; t2=datetime.fromisoformat('[T2]'); t3=datetime.fromisoformat('[T3]'); print(max(1, int((t3-t2).total_seconds()//3600)))"`
+       El resultado es el número de horas reales que el poll debe permanecer abierto (mínimo 1 hora, requisito de Discord). Inyéctalo en el payload del Cron B.
      - **Programa AHORA MISMO los 3 crones futuros usando la herramienta `cron.add` con esta estructura JSON estricta:**
 
      **A. Cron Fase II (Fecha T1):**
      ```json
      {
        "name": "FASE2_[ID_HILO]",
+       "agentId": "legislativo",
        "sessionTarget": "isolated",
        "wakeMode": "now",
        "schedule": { "kind": "at", "at": "[FECHA_ISO_T1]" },
        "payload": {
          "kind": "agentTurn",
-         "message": "CRON AISLADO — TRANSICIÓN A FASE II. DATOS: threadId=[ID_HILO], guildId=[ID_GUILD], channelId=[ID_HILO]. PASO 1: Lee state.md y localiza la fila con ID_HILO [ID_HILO]. PASO 2: Usa discord.sendMessage con guildId=[ID_GUILD] y threadId=[ID_HILO] para publicar: '📢 **FASE II: FALSACIÓN (48h)**. Inicia ejercicio de acero (steel man).' PASO 3: Usa discord.readMessages en threadId=[ID_HILO] para buscar el patrón [STATUS: ÁRBITRO-MODERADOR @... ASIGNADO]. Si lo encuentras, extrae la mención. PASO 4: Actualiza state.md — columna FASE a 'FASE 2 [ID del mensaje enviado en Paso 2]'. Si encontraste Árbitro en Paso 3, actualiza columna ARBITRO_MODERADOR. PASO 5: Termina. No hagas nada más.",
-         "model": "anthropic/claude-sonnet-4-6"
+         "message": "CRON AISLADO — TRANSICIÓN A FASE II. DATOS: threadId=[ID_HILO], guildId=[ID_GUILD], channelId=[ID_HILO]. PASO 0 (GUARDA): Lee ./state.md y localiza la fila con ID_HILO [ID_HILO]. Si la columna FASE ya dice 'FASE 2' o superior (FASE 3, DONE), ejecuta cron.delete con nombre 'FASE2_[ID_HILO]' para auto-eliminarte, luego responde con el texto 'GUARDA ACTIVADA: FASE2_[ID_HILO] ya procesado. Cron eliminado.' y termina inmediatamente — NO ejecutes ningún otro paso. PASO 1: Usa discord.sendMessage con guildId=[ID_GUILD] y threadId=[ID_HILO] para publicar: '📢 **FASE II: FALSACIÓN (48h)**. Inicia ejercicio de acero (steel man).' PASO 2: Usa discord.readMessages en threadId=[ID_HILO] para buscar el patrón [STATUS: ÁRBITRO-MODERADOR @... ASIGNADO]. Si lo encuentras, extrae la mención. PASO 3: Actualiza ./state.md — columna FASE a 'FASE 2 [ID del mensaje enviado en Paso 1]'. Si encontraste Árbitro en Paso 2, actualiza columna ARBITRO_MODERADOR. PASO 4: Termina. No hagas nada más.",
+         "model": "anthropic/claude-sonnet-4-5"
        },
        "delivery": { "mode": "announce" }
      }
@@ -55,13 +57,14 @@ Tu Heartbeat tiene una misión de **Arquitecto**: Detectar, Calcular Todo y Regi
      ```json
      {
        "name": "FASE3_[ID_HILO]",
+       "agentId": "legislativo",
        "sessionTarget": "isolated",
        "wakeMode": "now",
        "schedule": { "kind": "at", "at": "[FECHA_ISO_T2]" },
        "payload": {
          "kind": "agentTurn",
-         "message": "CRON AISLADO — TRANSICIÓN A FASE III. DATOS: threadId=[ID_HILO], guildId=[ID_GUILD], channelId=[ID_HILO], pollDurationHours=[POLL_DURATION_HOURS]. PASO 1: Lee state.md y localiza la fila con ID_HILO [ID_HILO]. PASO 2: Usa discord.poll en guildId=[ID_GUILD] y threadId=[ID_HILO] con pregunta '¿Elevar propuesta al Cuerpo de Árbitros?', opciones '👍 Elevar', '👎 No elevar' y --poll-duration-hours [POLL_DURATION_HOURS]. PASO 3: Usa discord.sendMessage con guildId=[ID_GUILD] y threadId=[ID_HILO] para publicar: '🗳️ **FASE III: VOTACIÓN (24h)**. Inicia voto para proceso de elevación.' PASO 4: Actualiza state.md — columna FASE a 'FASE 3 [ID del mensaje enviado en Paso 3]'. PASO 5: Termina. No hagas nada más.",
-         "model": "anthropic/claude-sonnet-4-6"
+         "message": "CRON AISLADO — TRANSICIÓN A FASE III. DATOS: threadId=[ID_HILO], guildId=[ID_GUILD], channelId=[ID_HILO], pollDurationHours=[POLL_DURATION_HOURS]. PASO 0 (GUARDA): Lee ./state.md y localiza la fila con ID_HILO [ID_HILO]. Si la columna FASE ya dice 'FASE 3' o 'DONE', ejecuta cron.delete con nombre 'FASE3_[ID_HILO]' para auto-eliminarte, luego responde con el texto 'GUARDA ACTIVADA: FASE3_[ID_HILO] ya procesado. Cron eliminado.' y termina inmediatamente — NO ejecutes ningún otro paso. PASO 1: Usa discord.poll en guildId=[ID_GUILD] y threadId=[ID_HILO] con pregunta '¿Elevar propuesta al Cuerpo de Árbitros?', opciones '👍 Elevar', '👎 No elevar' y --poll-duration-hours [POLL_DURATION_HOURS]. PASO 2: Usa discord.sendMessage con guildId=[ID_GUILD] y threadId=[ID_HILO] para publicar: '🗳️ **FASE III: VOTACIÓN (24h)**. Inicia voto para proceso de elevación.' PASO 3: Actualiza ./state.md — columna FASE a 'FASE 3 [ID del mensaje enviado en Paso 2]'. PASO 4: Termina. No hagas nada más.",
+         "model": "anthropic/claude-sonnet-4-5"
        },
        "delivery": { "mode": "announce" }
      }
@@ -71,13 +74,14 @@ Tu Heartbeat tiene una misión de **Arquitecto**: Detectar, Calcular Todo y Regi
      ```json
      {
        "name": "CIERRE_[ID_HILO]",
+       "agentId": "legislativo",
        "sessionTarget": "isolated",
        "wakeMode": "now",
        "schedule": { "kind": "at", "at": "[FECHA_ISO_T3]" },
        "payload": {
          "kind": "agentTurn",
-         "message": "CRON AISLADO — CIERRE Y HANDOFF. DATOS: threadId=[ID_HILO], guildId=[ID_GUILD], channelId=[ID_HILO]. PASO 1: Lee state.md y localiza la fila con ID_HILO [ID_HILO]. Obtén el ARBITRO_MODERADOR registrado. PASO 2: Usa discord.readMessages en guildId=[ID_GUILD] y threadId=[ID_HILO] para leer el resultado del poll activo. PASO 3: Usa discord.sendMessage con guildId=[ID_GUILD] y threadId=[ID_HILO] para publicar: '📊 **RESULTADO FINAL:** [Aprobado/Rechazado] - [Conteo de Votos].' PASO 4: Usa discord.sendMessage con guildId=[ID_GUILD] y threadId=[ID_HILO] para publicar: '[STATUS: PROCESO FINALIZADO - ESPERANDO ACCIÓN DEL ÁRBITRO-MODERADOR @...]' (usa el árbitro de state.md). PASO 5: Actualiza state.md — columna ESTADO a 'DONE'. PASO 6: Termina. No hagas nada más.",
-         "model": "anthropic/claude-sonnet-4-6"
+         "message": "CRON AISLADO — CIERRE Y HANDOFF. DATOS: threadId=[ID_HILO], guildId=[ID_GUILD], channelId=[ID_HILO]. PASO 0 (GUARDA): Lee ./state.md y localiza la fila con ID_HILO [ID_HILO]. Si la columna ESTADO ya dice 'DONE', ejecuta cron.delete con nombre 'CIERRE_[ID_HILO]' para auto-eliminarte, luego responde con el texto 'GUARDA ACTIVADA: CIERRE_[ID_HILO] ya procesado. Cron eliminado.' y termina inmediatamente — NO ejecutes ningún otro paso. PASO 1: Obtén el ARBITRO_MODERADOR registrado en ./state.md para esta fila. PASO 2: Usa discord.readMessages en guildId=[ID_GUILD] y threadId=[ID_HILO] para leer el resultado del poll (ya cerrado por Discord automáticamente). PASO 3: Usa discord.sendMessage con guildId=[ID_GUILD] y threadId=[ID_HILO] para publicar: '📊 **RESULTADO FINAL:** [Aprobado/Rechazado] - [Conteo de Votos].' PASO 4: Usa discord.sendMessage con guildId=[ID_GUILD] y threadId=[ID_HILO] para publicar: '[STATUS: PROCESO FINALIZADO - ESPERANDO ACCIÓN DEL ÁRBITRO-MODERADOR @...]' (usa el árbitro de ./state.md). PASO 5: Actualiza ./state.md — columna ESTADO a 'DONE'. PASO 6: Termina. No hagas nada más.",
+         "model": "anthropic/claude-sonnet-4-5"
        },
        "delivery": { "mode": "announce" }
      }
