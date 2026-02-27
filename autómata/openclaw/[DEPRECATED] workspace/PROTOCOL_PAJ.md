@@ -30,7 +30,7 @@ Instrucciones para el Cron al cerrar la votación:
 2.  **ESCENARIO 1: ADMITIDO (✅)**
     * **Log:** Reporta en `#logs-del-sistema`: "Caso [ID] Admitido. Iniciando Juicio."
     * **Acción:** Dispara inmediatamente el **PROTOCOLO PPJ-01**:
-        * Crea el canal `#tribunal-[ID]` en la Categoría JUDICIAL (`1469270229782892596`).
+        * Crea el canal `#tribunal-[ID]` en la Categoría JUDICIAL (`placeholder`).
         * Publica en el nuevo canal: "⚠️ **ATENCIÓN JUEZ:** Configura este canal como PRIVADO (Solo partes y Jueces)."
         * Notifica en el hilo original de Secretaría: "✅ **Admitido.** Procedimiento trasladado a su tribunal asignado."
 3.  **ESCENARIO 2: RECHAZADO POR FORMA (⚠️)**
